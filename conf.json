@@ -1,0 +1,11 @@
+{
+    "DbConfig": {
+        "Host": "host",
+        "User": "user",
+        "Password": "pass",
+        "DbName": "db",
+        "Port": "port",
+        "SslMode": "mode"
+    },
+    "Token": "toke"
+}

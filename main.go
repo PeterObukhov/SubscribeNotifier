@@ -7,6 +7,7 @@ import (
 var db *gorm.DB
 
 func main() {
+	GetConfiguration()
 	db = connectToDb()
 	startBot()
 }

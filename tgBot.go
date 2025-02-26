@@ -23,7 +23,7 @@ func startBot() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	tgBot, err := bot.New("token", opts...)
+	tgBot, err := bot.New(configuration.Token, opts...)
 
 	if err != nil {
 		panic(err)
