@@ -12,18 +12,21 @@ import (
 	"github.com/go-telegram/ui/keyboard/inline"
 )
 
-var isSubscribeInput bool
+var isSubscriptionInput bool
 var tgBot *bot.Bot
+var ctx context.Context
 
 func startBot() {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	var cancel context.CancelFunc
+	ctx, cancel = signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),
 	}
 
-	tgBot, err := bot.New(configuration.Token, opts...)
+	var err error
+	tgBot, err = bot.New(configuration.Token, opts...)
 
 	if err != nil {
 		panic(err)
@@ -37,11 +40,11 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		Row().
 		Button("Добавить подписку", []byte("newSubs"), onInlineKeyboardSelect)
 
-	if isSubscribeInput {
+	if isSubscriptionInput {
 		splitMsg := strings.Split(update.Message.Text, ":")
-		price, _ := strconv.ParseUint(strings.Trim(splitMsg[1], " "), 10, 32)
-		date, _ := strconv.ParseUint(strings.Trim(splitMsg[2], " "), 10, 32)
-		subscription := Subscription{Name: splitMsg[0], Price: price, Date: date}
+		price, _ := strconv.ParseFloat(strings.Trim(splitMsg[1], " "), 32)
+		date, _ := strconv.ParseInt(strings.Trim(splitMsg[2], " "), 10, 32)
+		subscription := Subscription{Name: splitMsg[0], Price: float32(price), Date: int(date)}
 		user := User{Login: update.Message.From.Username, ChatId: update.Message.Chat.ID, Subscriptions: []Subscription{subscription}}
 
 		if addUserOrSubscription(*db, user) {
@@ -58,7 +61,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			})
 		}
 
-		isSubscribeInput = false
+		isSubscriptionInput = false
 	} else {
 		if update.Message != nil {
 			b.SendMessage(ctx, &bot.SendMessageParams{
@@ -76,5 +79,5 @@ func onInlineKeyboardSelect(ctx context.Context, b *bot.Bot, mes models.MaybeIna
 		Text:   "Введите данные о новой подписке в формате *Название* : *Сумма* : *Число, в которое происходит списание*",
 	})
 
-	isSubscribeInput = true
+	isSubscriptionInput = true
 }

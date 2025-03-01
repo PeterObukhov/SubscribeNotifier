@@ -11,6 +11,6 @@ type Subscription struct {
 	ID     uint `gorm:"primaryKey;autoIncrement"`
 	UserID uint
 	Name   string
-	Price  uint64
-	Date   uint64
+	Price  float32
+	Date   int
 }
